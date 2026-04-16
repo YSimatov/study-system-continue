@@ -7,7 +7,7 @@ import { SiteFooter } from "@/components/site-footer";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "InfoSys Learn — Компьютер и его ПО",
+  title: "InfoSys Learn",
   description: "Информационная система обучения для 10 класса",
 };
 
