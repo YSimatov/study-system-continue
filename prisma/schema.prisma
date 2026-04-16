@@ -30,6 +30,7 @@ model User {
   updatedAt     DateTime  @updatedAt
   
   attempts      Attempt[]
+  examAttempts  ExamAttempt[]
 }
 
 model Topic {
@@ -39,7 +40,8 @@ model Topic {
   description String?
   createdAt   DateTime   @default(now())
   
-  subtopics   Subtopic[]
+  subtopics    Subtopic[]
+  examAttempts ExamAttempt[]
 }
 
 model Subtopic {
@@ -110,3 +112,17 @@ model AttemptAnswer {
 
   isCorrect       Boolean
 }
+
+model ExamAttempt {
+  id        String   @id @default(cuid())
+  score     Int
+  total     Int
+  createdAt DateTime @default(now())
+
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  topicId   String
+  topic     Topic    @relation(fields: [topicId], references: [id], onDelete: Cascade)
+}
+

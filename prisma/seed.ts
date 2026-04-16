@@ -51,6 +51,7 @@ async function main() {
 
 
     // 2. Clean up existing content (optional, but good for clean seed)
+    await prisma.examAttempt.deleteMany({})
     await prisma.attemptAnswer.deleteMany({})
     await prisma.attempt.deleteMany({})
     await prisma.option.deleteMany({})

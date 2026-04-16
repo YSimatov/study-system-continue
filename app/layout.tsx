@@ -2,13 +2,13 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
-import { ConnectionStatus } from "@/components/connection-status";
+import { SiteFooter } from "@/components/site-footer";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Computer & Software Learning System",
-  description: "Educational platform for 10th grade students",
+  title: "InfoSys Learn — Компьютер и его ПО",
+  description: "Информационная система обучения для 10 класса",
 };
 
 export default function RootLayout({
@@ -17,11 +17,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        {children}
+    <html lang="ru">
+      <body className={`${inter.className} flex flex-col min-h-screen`}>
+        <div className="flex-1">
+          {children}
+        </div>
+        <SiteFooter />
         <Toaster />
-        <ConnectionStatus />
       </body>
     </html>
   );

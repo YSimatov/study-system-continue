@@ -1,8 +1,9 @@
 import { SiteHeader } from "@/components/site-header"
 import { prisma } from "@/lib/prisma"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { ArrowRight, Book, CheckCircle } from "lucide-react"
+import { ArrowRight, Book, CheckCircle, GraduationCap } from "lucide-react"
 import { notFound } from "next/navigation"
 import { auth } from "@/auth"
 
@@ -47,6 +48,29 @@ export default async function TopicDetailPage(props: Props) {
                     <h1 className="text-3xl font-bold">{topic.title}</h1>
                     <p className="text-muted-foreground mt-2">{topic.description}</p>
                 </div>
+
+                {/* ── Exam CTA ── */}
+                {session?.user && (
+                    <div className="mb-6 flex items-center justify-between border rounded-xl p-5 bg-primary/5">
+                        <div className="flex items-center gap-3">
+                            <div className="bg-primary/10 p-2 rounded-full">
+                                <GraduationCap className="h-6 w-6 text-primary" />
+                            </div>
+                            <div>
+                                <p className="font-semibold">Тест на проверку знаний</p>
+                                <p className="text-sm text-muted-foreground">
+                                    15 вопросов по всем разделам · результат сохраняется в ЛК
+                                </p>
+                            </div>
+                        </div>
+                        <Button asChild>
+                            <Link href={`/exam/${topic.id}`}>
+                                Пройти экзамен
+                                <ArrowRight className="ml-2 h-4 w-4" />
+                            </Link>
+                        </Button>
+                    </div>
+                )}
 
                 <div className="grid gap-4">
                     {topic.subtopics.map((sub, index) => {
