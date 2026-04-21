@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { auth } from "@/auth"
 import { Button } from "@/components/ui/button"
+import { ThemeToggle } from "@/components/theme-toggle"
 import { UserMenu } from "@/components/user-menu"
 import { Monitor } from "lucide-react"
 
@@ -23,6 +24,7 @@ export async function SiteHeader() {
                     </Link>
                 </nav>
                 <div className="ml-auto flex items-center space-x-4">
+                    <ThemeToggle />
                     {session?.user ? (
                         <UserMenu user={session.user} />
                     ) : (
