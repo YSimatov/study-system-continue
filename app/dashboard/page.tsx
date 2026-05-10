@@ -44,17 +44,6 @@ export default async function DashboardPage() {
                 </p>
             </div>
 
-            {/* ── Danger zone ── */}
-            <div className="flex items-center justify-between border border-destructive/30 rounded-lg px-5 py-4 bg-destructive/5">
-                <div>
-                    <p className="font-medium text-sm">Удаление аккаунта</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">
-                        Все ваши данные и результаты будут удалены безвозвратно.
-                    </p>
-                </div>
-                <DeleteMyAccountButton />
-            </div>
-
             {/* ── Stats row ── */}
             <div className="grid gap-4 md:grid-cols-3">
                 <Card>
@@ -164,6 +153,17 @@ export default async function DashboardPage() {
                         </div>
                     </Card>
                 )}
+            </div>
+
+            {/* Danger zone */}
+            <div className="flex items-center justify-between border border-destructive/30 rounded-lg px-5 py-4 bg-destructive/5">
+                <div>
+                    <p className="font-medium text-sm">Удаление аккаунта</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                        Все ваши данные и результаты будут удалены безвозвратно.
+                    </p>
+                </div>
+                <DeleteMyAccountButton />
             </div>
         </div>
     )
