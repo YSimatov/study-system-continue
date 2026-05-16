@@ -20,6 +20,11 @@ enum Role {
   ADMIN
 }
 
+enum ExamMode {
+  RANDOM
+  FIXED
+}
+
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -34,12 +39,15 @@ model User {
 }
 
 model Topic {
-  id          String     @id @default(cuid())
-  title       String
-  slug        String     @unique
-  description String?
-  createdAt   DateTime   @default(now())
-  
+  id                    String     @id @default(cuid())
+  title                 String
+  slug                  String     @unique
+  description           String?
+  createdAt             DateTime   @default(now())
+
+  examMode              ExamMode   @default(RANDOM)
+  questionsPerSubtopic  Int        @default(3)
+
   subtopics    Subtopic[]
   examAttempts ExamAttempt[]
 }
@@ -63,6 +71,7 @@ model Subtopic {
 model Question {
   id          String    @id @default(cuid())
   text        String
+  inExam      Boolean   @default(false)
   createdAt   DateTime  @default(now())
   
   subtopicId  String

@@ -3,7 +3,7 @@ import Link from "next/link"
 import { auth } from "@/auth"
 import { redirect } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { FileText, LayoutDashboard, Users, HelpCircle, BookOpen } from "lucide-react"
+import { FileText, LayoutDashboard, Users, HelpCircle, BookOpen, ClipboardEdit } from "lucide-react"
 
 export default async function DashboardLayout({
     children,
@@ -41,6 +41,9 @@ export default async function DashboardLayout({
                             </Button>
                             <Button asChild variant="ghost" className="justify-start">
                                 <Link href="/dashboard/questions"><HelpCircle className="mr-2 h-4 w-4" /> Вопросы</Link>
+                            </Button>
+                            <Button asChild variant="ghost" className="justify-start">
+                                <Link href="/dashboard/exam"><ClipboardEdit className="mr-2 h-4 w-4" /> Экзамен</Link>
                             </Button>
                         </>
                     )}

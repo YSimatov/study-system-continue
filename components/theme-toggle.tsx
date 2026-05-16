@@ -20,7 +20,7 @@ export function ThemeToggle() {
     <div className="flex items-center gap-2 text-muted-foreground">
       <Sun className="h-4 w-4" aria-hidden="true" />
       <Switch
-        aria-label="Переключить тёмную тему"
+        aria-label="Переключить тему"
         checked={isDark}
         disabled={!mounted}
         onCheckedChange={(checked) => setTheme(checked ? "dark" : "light")}

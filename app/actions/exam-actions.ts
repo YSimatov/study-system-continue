@@ -6,16 +6,27 @@ import { z } from "zod"
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
 
-// ─── Get exam questions: 3 random per subtopic (no isCorrect sent to client) ───
+// ─── Get exam questions: respects examMode (RANDOM/FIXED) and questionsPerSubtopic ───
 export async function getExamData(topicId: string) {
     const session = await auth()
     if (!session?.user) return null
+
+    // Fetch topic settings
+    const topic = await prisma.topic.findUnique({
+        where: { id: topicId },
+        select: { examMode: true, questionsPerSubtopic: true }
+    })
+    if (!topic) return null
+
+    const isFixed = topic.examMode === "FIXED"
+    const limit = topic.questionsPerSubtopic ?? 3
 
     // Fetch all subtopics with their questions/options
     const subtopics = await prisma.subtopic.findMany({
         where: { topicId },
         include: {
             questions: {
+                where: isFixed ? { inExam: true } : undefined,
                 include: {
                     options: {
                         select: { id: true, text: true } // ← no isCorrect!
@@ -26,14 +37,22 @@ export async function getExamData(topicId: string) {
         orderBy: { createdAt: "asc" }
     })
 
-    // Pick 3 random questions per subtopic
-    const examQuestions = subtopics.flatMap(sub => {
-        const shuffled = [...sub.questions].sort(() => Math.random() - 0.5)
-        return shuffled.slice(0, 3).map(q => ({
-            ...q,
-            subtopicTitle: sub.title
-        }))
-    })
+    let examQuestions
+    if (isFixed) {
+        // FIXED mode: take all marked questions as-is, shuffle order
+        examQuestions = subtopics.flatMap(sub =>
+            sub.questions.map(q => ({ ...q, subtopicTitle: sub.title }))
+        )
+    } else {
+        // RANDOM mode: pick N random per subtopic
+        examQuestions = subtopics.flatMap(sub => {
+            const shuffled = [...sub.questions].sort(() => Math.random() - 0.5)
+            return shuffled.slice(0, limit).map(q => ({
+                ...q,
+                subtopicTitle: sub.title
+            }))
+        })
+    }
 
     // Shuffle the full list so questions from different subtopics mix
     return examQuestions.sort(() => Math.random() - 0.5)

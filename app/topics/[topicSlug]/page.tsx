@@ -7,6 +7,8 @@ import { ArrowRight, Book, CheckCircle, GraduationCap } from "lucide-react"
 import { notFound } from "next/navigation"
 import { auth } from "@/auth"
 
+export const dynamic = "force-dynamic"
+
 interface Props {
     params: Promise<{
         topicSlug: string
@@ -27,6 +29,12 @@ export default async function TopicDetailPage(props: Props) {
                         where: { userId: session?.user?.id },
                         orderBy: { score: 'desc' }, // Get best attempt
                         take: 1
+                    },
+                    _count: {
+                        select: {
+                            questions: true,
+                            // count inExam=true questions
+                        }
                     }
                 }
             }
@@ -35,6 +43,28 @@ export default async function TopicDetailPage(props: Props) {
 
     if (!topic) {
         notFound()
+    }
+
+    // Count exam questions based on mode
+    let examQuestionCount = 0
+    if (topic.examMode === "FIXED") {
+        const fixedCount = await prisma.question.count({
+            where: {
+                subtopic: { topicId: topic.id },
+                inExam: true
+            }
+        })
+        examQuestionCount = fixedCount
+    } else {
+        // RANDOM: min(questionsPerSubtopic, actual questions) × subtopics
+        const subtopicCounts = await prisma.question.groupBy({
+            by: ['subtopicId'],
+            where: { subtopic: { topicId: topic.id } },
+            _count: { id: true }
+        })
+        examQuestionCount = subtopicCounts.reduce((acc, s) => {
+            return acc + Math.min(s._count.id, topic.questionsPerSubtopic)
+        }, 0)
     }
 
     return (
@@ -59,8 +89,11 @@ export default async function TopicDetailPage(props: Props) {
                             <div>
                                 <p className="font-semibold">Тест на проверку знаний</p>
                                 <p className="text-sm text-muted-foreground">
-                                    15 вопросов по всем разделам · результат сохраняется в ЛК
-                                </p>
+                                        {examQuestionCount > 0
+                                            ? `${examQuestionCount} вопрос${examQuestionCount === 1 ? '' : examQuestionCount < 5 ? 'а' : 'ов'} по всем разделам`
+                                            : 'Вопросы ещё не добавлены'
+                                        } · результат сохраняется в ЛК
+                                    </p>
                             </div>
                         </div>
                         <Button asChild>

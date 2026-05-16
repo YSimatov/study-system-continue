@@ -66,3 +66,35 @@ export async function deleteQuestion(id: string) {
     revalidatePath('/dashboard/questions')
     return { success: "Question deleted" }
 }
+
+// ─── Toggle inExam flag on a question ───
+export async function toggleQuestionInExam(id: string, inExam: boolean) {
+    const session = await auth()
+    if (session?.user?.role !== "ADMIN" && session?.user?.role !== "TEACHER") {
+        return { error: "Unauthorized" }
+    }
+    await prisma.question.update({ where: { id }, data: { inExam } })
+    revalidatePath('/dashboard/exam')
+    return { success: true }
+}
+
+// ─── Update exam mode and questions-per-subtopic for a topic ───
+const examSettingsSchema = z.object({
+    topicId: z.string(),
+    examMode: z.enum(["RANDOM", "FIXED"]),
+    questionsPerSubtopic: z.number().int().min(1).max(20),
+})
+
+export async function updateExamSettings(values: z.infer<typeof examSettingsSchema>) {
+    const session = await auth()
+    if (session?.user?.role !== "ADMIN" && session?.user?.role !== "TEACHER") {
+        return { error: "Unauthorized" }
+    }
+    const { topicId, examMode, questionsPerSubtopic } = examSettingsSchema.parse(values)
+    await prisma.topic.update({
+        where: { id: topicId },
+        data: { examMode, questionsPerSubtopic }
+    })
+    revalidatePath('/dashboard/exam')
+    return { success: true }
+}

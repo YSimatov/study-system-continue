@@ -10,6 +10,8 @@ import Link from "next/link"
 import { BookOpen, ClipboardList } from "lucide-react"
 import { cn } from "@/lib/utils"
 
+export const dynamic = "force-dynamic"
+
 interface Props {
     params: Promise<{
         topicSlug: string
